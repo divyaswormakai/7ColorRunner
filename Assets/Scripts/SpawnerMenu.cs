@@ -21,7 +21,7 @@ public class SpawnerMenu : MonoBehaviour
         currTime = currSpawnTime;
 
         screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
-
+        print(screenBounds);
         laneList = new List<float>();
         CreateLanePosition();
     }
@@ -35,8 +35,8 @@ public class SpawnerMenu : MonoBehaviour
     void CreateLanePosition()
     {
         float totalWidth = (screenBounds.x * 2) - 4f;
-        float laneWidth = totalWidth / 4;
-        float startPoint = (screenBounds.x * -1) + 3f;
+        float laneWidth = totalWidth / 7;
+        float startPoint = (screenBounds.x * -1) + 2f;
         laneList.Add(startPoint);
         for (int i = 0; i < 8; i++)
         {

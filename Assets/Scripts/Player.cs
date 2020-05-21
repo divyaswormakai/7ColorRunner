@@ -7,12 +7,12 @@ public class Player : MonoBehaviour
     public Sprite[] sprite;
     public bool isInvincible = false;
     public ParticleSystem particles, wrongCollision;
+    public AudioSource goodColl, badColl;
+
 
     private SpriteRenderer spriteRenderer;
-    private bool isShiningSound = false;
     private float invincibleTimer = 10f;
     private int currIndx = 0;
-
     private GameController gameController;
 
 
@@ -20,7 +20,6 @@ public class Player : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         gameController = FindObjectOfType<GameController>();
-
     }
 
     private void Update()
@@ -64,10 +63,10 @@ public class Player : MonoBehaviour
         if (isInvincible)
         {
             //play sound
-            isShiningSound = true;
             gameController.IncreaseBonusScore();
             gameController.IncreaseScore();
             particles.Emit(30);
+            goodColl.Play();
         }
         else
         {
@@ -80,21 +79,21 @@ public class Player : MonoBehaviour
                 particles.Clear();
                 StartCoroutine(StartEmitting());
                 wrongCollision.Emit(30);
+                badColl.Play();
             }
             else
             {
                 //play sound
-                isShiningSound = true;
                 gameController.IncreaseScore();
                 gameController.IncreaseTime(3f);
                 particles.Emit(30);
+                goodColl.Play();
             }
         }
     }
 
     public void EnableMovement(bool mode)
     {
-        print(mode);
         GetComponent<PlayerMovement>().enabled = mode;
     }
 

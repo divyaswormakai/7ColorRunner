@@ -8,6 +8,8 @@ public class BtnController : MonoBehaviour
 {
     public int activeColor = 0;
 
+    public AudioSource btnAudio;
+
     GameController gameController;
 
     private void Start()
@@ -65,25 +67,48 @@ public class BtnController : MonoBehaviour
         gameController.DisableBtns(false);
         gameController.pauseMenu.gameObject.SetActive(false);
         FindObjectOfType<Player>().EnableMovement(true);
+        btnAudio.Play();
     }
 
     public void BackToMenuBtn()
     {
         StartCoroutine(FindObjectOfType<LevelLoader>().LoadGameFromMenu("Menu"));
+        btnAudio.Play();
     }
 
     public void PlayBtn()
     {
         StartCoroutine(FindObjectOfType<LevelLoader>().LoadGameFromMenu("Main"));
+        btnAudio.Play();
     }
 
     public void HardBtn()
     {
         StartCoroutine(FindObjectOfType<LevelLoader>().LoadGameFromMenu("Hard"));
+        btnAudio.Play();
     }
 
     public void ExitBtn()
     {
         Application.Quit();
+        btnAudio.Play();
+    }
+
+    public void ShowAdBtn()
+    {
+        FindObjectOfType<AdManager>().PlayRewardedVideo();
+        btnAudio.Play();
+    }
+
+    public void RestartBtn()
+    {
+        StartCoroutine(FindObjectOfType<LevelLoader>().LoadGameFromMenu(SceneManager.GetActiveScene().name));
+        btnAudio.Play();
+    }
+
+    public void ResumeFromGameOver()
+    {
+        gameController.ResumeGame();
+        btnAudio.Play();
     }
 }

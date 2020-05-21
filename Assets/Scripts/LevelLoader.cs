@@ -17,10 +17,9 @@ public class LevelLoader : MonoBehaviour
     {
         //Play Animation
         transition.SetTrigger("Start");
-
         //Wait
-        yield return new WaitForSeconds(0f);
-
+        yield return new WaitForSeconds(0.8f);
+        //Do the thing
         SceneManager.LoadScene(scene);
     }
 }

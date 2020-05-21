@@ -8,23 +8,25 @@ public class GameController : MonoBehaviour
 {
     public TextMeshProUGUI scoreBoard, timeBoard, bonusBoard, instruction;
     public Button[] btns;
-    public Canvas pauseMenu;
+    public Button resumeBtn;
+    public Canvas pauseMenu, gameOverCanvas;
     public bool isGamePaused = false;
     public bool isTimePaused = false;
     public bool isTimeSlowed = false;
+    public AudioSource bgSound;
 
 
     private Vector2 screenBounds;
     private int score = 0;
     private int bonusScore = 0;
-    private float timeRem = 20f;
+    private float timeRem = 2f;
     private int currActiveIndx = 3;
     private int tenMultiplier = 0;
     private float slowTimeDivider = 1f;
     private float slowTimeRem = 5f;
     private int invincibleDigit = 10;
     private Player player;
-
+    private bool isGameOver = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -40,71 +42,83 @@ public class GameController : MonoBehaviour
     //fix bonus during pause menu
     void Update()
     {
-        if (timeRem < 0)
+        if (!isGameOver)
         {
-            //SceneManager.LoadScene("Main");
-        }
-
-        //pause menu
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            isGamePaused = !isGamePaused;
-            if (isGamePaused)
+            //Game Over
+            if (timeRem < 0)
             {
-                isTimePaused = true;
+                print("Game Over");
+                isGameOver = true;
+                isGamePaused = true;                //to stop the spawner
+                bgSound.Pause();
                 DisableBtns(true);
-                pauseMenu.gameObject.SetActive(true);
                 player.EnableMovement(false);
+                gameOverCanvas.gameObject.SetActive(true);
             }
-            else
-            {
-                print("Pause complete mf");
-                isTimePaused = false;
-                DisableBtns(false);
-                pauseMenu.gameObject.SetActive(false);
-                player.EnableMovement(true);
-            }
-        }
 
-        if (!isTimePaused)
-        {
-            timeRem -= Time.deltaTime / slowTimeDivider;
-            timeBoard.text = "Time:\n " + timeRem.ToString();
-        }
-
-
-        //For slowMotion part
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (bonusScore >= 15)
+            //pause menu
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                StartSlowMo();
-            }
-        }
-        foreach (Touch t in Input.touches)
-        {
-            if (t.tapCount >= 2)
-            {
-                if (bonusScore >= 15)
+                isGamePaused = !isGamePaused;
+                if (isGamePaused)       //Now pause the game
                 {
-                    StartSlowMo();
-                    bonusScore -= 15;
-                    scoreBoard.text = "Score: " + score.ToString() + "\nBonus: " + bonusScore.ToString();
+                    bgSound.Pause();
+                    isTimePaused = true;
+                    DisableBtns(true);
+                    pauseMenu.gameObject.SetActive(true);
+                    player.EnableMovement(false);
+                }
+                else                    //Unpause the game
+                {
+                    bgSound.Play();
+                    isTimePaused = false;
+                    DisableBtns(false);
+                    pauseMenu.gameObject.SetActive(false);
+                    player.EnableMovement(true);
                 }
             }
-        }
-        if (isTimeSlowed && !isGamePaused)
-        {
-            print("time Slowed");
-            slowTimeRem -= Time.deltaTime;
-            SetBonusBoardText("Slow Time Remainig:" + slowTimeRem.ToString());
-            if (slowTimeRem < 0f)
+
+            if (!isTimePaused)
             {
-                isTimeSlowed = false;
-                slowTimeRem = 5f;
-                slowTimeDivider = 1f;
-                SetBonusBoardText("");
-                player.Shrink(false);
+                timeRem -= Time.deltaTime / slowTimeDivider;
+                timeBoard.text = "Time:\n " + timeRem.ToString();
+            }
+
+
+            //For slowMotion part
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (bonusScore >= 15 && !player.isInvincible)
+                {
+                    StartSlowMo();
+                }
+            }
+            foreach (Touch t in Input.touches)
+            {
+                if (t.tapCount >= 2)
+                {
+                    if (bonusScore >= 15 && !player.isInvincible)
+                    {
+                        StartSlowMo();
+                        bonusScore -= 15;
+                        scoreBoard.text = "Score: " + score.ToString() + "\nBonus: " + bonusScore.ToString();
+                    }
+                }
+            }
+            if (isTimeSlowed && !isGamePaused)
+            {
+                print("time Slowed");
+                slowTimeRem -= Time.deltaTime;
+                SetBonusBoardText("Slow Time Remainig:" + slowTimeRem.ToString());
+                if (slowTimeRem < 0f)
+                {
+                    isTimeSlowed = false;
+                    slowTimeRem = 5f;
+                    slowTimeDivider = 1f;
+                    SetBonusBoardText("");
+                    player.Shrink(false);
+                    bgSound.pitch *= 1.5f;
+                }
             }
         }
     }
@@ -154,13 +168,12 @@ public class GameController : MonoBehaviour
 
     public void StartSlowMo()
     {
-        if (!player.isInvincible)
-        {
-            isTimeSlowed = true;
-            slowTimeDivider = 4f;
-            player.Shrink(true);
 
-        }
+        bgSound.pitch /= 1.5f;
+        isTimeSlowed = true;
+        slowTimeDivider = 4f;
+        player.Shrink(true);
+
     }
 
     public void DisableBtns(bool mode)
@@ -191,4 +204,21 @@ public class GameController : MonoBehaviour
         bonusBoard.text = text;
     }
 
+    public void IncreaseTime()
+    {
+        timeRem += 10f;
+        resumeBtn.gameObject.SetActive(true);
+        timeBoard.text = "Time:\n " + timeRem.ToString();
+    }
+
+    public void ResumeGame()
+    {
+        isGameOver = false;
+        isGamePaused = false;                //to start spawner
+        bgSound.Play();
+        DisableBtns(false);
+        player.EnableMovement(true);
+        gameOverCanvas.gameObject.SetActive(false);
+        resumeBtn.gameObject.SetActive(false);
+    }
 }
