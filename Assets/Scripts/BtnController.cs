@@ -72,6 +72,10 @@ public class BtnController : MonoBehaviour
 
     public void BackToMenuBtn()
     {
+        if (!gameController.isGamePaused)
+        {
+            CloudOnceServices.instance.SubmitScoretoLeaderBoard(gameController.GetScore());
+        }
         StartCoroutine(FindObjectOfType<LevelLoader>().LoadGameFromMenu("Menu"));
         btnAudio.Play();
     }

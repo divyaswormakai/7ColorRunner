@@ -221,4 +221,9 @@ public class GameController : MonoBehaviour
         gameOverCanvas.gameObject.SetActive(false);
         resumeBtn.gameObject.SetActive(false);
     }
+
+    public int GetScore()
+    {
+        return score;
+    }
 }

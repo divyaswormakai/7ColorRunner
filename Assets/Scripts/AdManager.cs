@@ -47,7 +47,6 @@ public class AdManager : MonoBehaviour, IUnityAdsListener
                 {
                     FindObjectOfType<GameController>().IncreaseTime();
                     print("Ad Completed");
-
                 }
                 break;
         }
