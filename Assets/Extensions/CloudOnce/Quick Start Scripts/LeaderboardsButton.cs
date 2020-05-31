@@ -7,7 +7,7 @@ namespace CloudOnce.QuickStart
 {
     using UnityEngine;
     using UnityEngine.UI;
-
+    using TMPro;
     /// <summary>
     /// Attach this to your Leaderboards GUI button.
     /// </summary>
@@ -15,6 +15,7 @@ namespace CloudOnce.QuickStart
     public class LeaderboardsButton : MonoBehaviour
     {
         private Button button;
+        public TextMeshProUGUI txt;
 
         private static void OnSignedInChanged(bool isSignedIn)
         {
@@ -42,6 +43,7 @@ namespace CloudOnce.QuickStart
 #if CLOUDONCE_DEBUG
                 Debug.Log("Can't show leaderboard overlay, user is not signed in!");
 #endif
+                txt.text = "Cant showleaderboard user not signed in";
                 SubscribeEvent();
                 Cloud.SignIn();
             }
@@ -54,6 +56,7 @@ namespace CloudOnce.QuickStart
             {
                 Debug.LogError("Show Leaderboards Button script placed on GameObject that is not a button." +
                                " Script is only compatible with UI buttons created from GameObject menu (GameObjects -> UI -> Button).");
+                txt.text = "show leaderboard button on gameobject and blahblah";
             }
         }
 

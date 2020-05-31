@@ -9,7 +9,8 @@ public class AdManager : MonoBehaviour, IUnityAdsListener
     void Start()
     {
         Advertisement.AddListener(this);
-        Advertisement.Initialize(playStoreID, isTestAd);
+        // Advertisement.Initialize(playStoreID, true);
+        Advertisement.Initialize(playStoreID);
     }
 
     public void PlayRewardedVideo()
