@@ -5,7 +5,7 @@ using CloudOnce;
 
 public class CloudOnceServices : MonoBehaviour
 {
-    public static CloudOnceServices instance;
+    public static CloudOnceServices instance { get; private set; }
 
     void Awake()
     {
@@ -24,6 +24,7 @@ public class CloudOnceServices : MonoBehaviour
 
     public void SubmitScoretoLeaderBoard(int score)
     {
+        Leaderboards.HighScore.SubmitScore(score);
         Leaderboards.HighScore.SubmitScore(score);
     }
 }

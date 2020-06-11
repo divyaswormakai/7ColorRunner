@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using CloudOnce;
 
 public class BtnController : MonoBehaviour
 {
@@ -72,10 +73,8 @@ public class BtnController : MonoBehaviour
 
     public void BackToMenuBtn()
     {
-        if (!gameController.isGamePaused)
-        {
-            CloudOnceServices.instance.SubmitScoretoLeaderBoard(gameController.GetScore());
-        }
+
+        CloudOnceServices.instance.SubmitScoretoLeaderBoard(gameController.GetScore());
         StartCoroutine(FindObjectOfType<LevelLoader>().LoadGameFromMenu("Menu"));
         btnAudio.Play();
     }
@@ -106,6 +105,7 @@ public class BtnController : MonoBehaviour
 
     public void RestartBtn()
     {
+        CloudOnceServices.instance.SubmitScoretoLeaderBoard(gameController.GetScore());
         StartCoroutine(FindObjectOfType<LevelLoader>().LoadGameFromMenu(SceneManager.GetActiveScene().name));
         btnAudio.Play();
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Spawner : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class Spawner : MonoBehaviour
 
         laneList = new List<float>();
         CreateLanePosition();
+
+        //set collectibleIndRange to no of available btns if scene hard
+        if (SceneManager.GetActiveScene().name == "Hard") collectibleIndRange = 6;
     }
 
     // Update is called once per frame

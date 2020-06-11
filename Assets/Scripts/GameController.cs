@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
     private Vector2 screenBounds;
     private int score = 0;
     private int bonusScore = 0;
-    private float timeRem = 2f;
+    private float timeRem = 20f;
     private int currActiveIndx = 3;
     private int tenMultiplier = 0;
     private float slowTimeDivider = 1f;
@@ -35,8 +35,10 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        scoreBoard.text = "Score: " + score.ToString() + "\nBonus: " + bonusScore.ToString();
+        scoreBoard.text = "x " + score.ToString() + "\n\nx " + (bonusScore / 15).ToString();
         player = FindObjectOfType<Player>();
+
+        if (SceneManager.GetActiveScene().name == "Hard") currActiveIndx = btns.Length;
     }
 
     //fix bonus during pause menu
@@ -62,7 +64,6 @@ public class GameController : MonoBehaviour
                 isGamePaused = !isGamePaused;
                 if (isGamePaused)       //Now pause the game
                 {
-                    bgSound.Pause();
                     isTimePaused = true;
                     DisableBtns(true);
                     pauseMenu.gameObject.SetActive(true);
@@ -70,7 +71,6 @@ public class GameController : MonoBehaviour
                 }
                 else                    //Unpause the game
                 {
-                    bgSound.Play();
                     isTimePaused = false;
                     DisableBtns(false);
                     pauseMenu.gameObject.SetActive(false);
@@ -81,7 +81,7 @@ public class GameController : MonoBehaviour
             if (!isTimePaused)
             {
                 timeRem -= Time.deltaTime / slowTimeDivider;
-                timeBoard.text = "Time:\n " + timeRem.ToString();
+                timeBoard.text = System.Math.Round(timeRem, 0).ToString();
             }
 
 
@@ -101,7 +101,7 @@ public class GameController : MonoBehaviour
                     {
                         StartSlowMo();
                         bonusScore -= 15;
-                        scoreBoard.text = "Score: " + score.ToString() + "\nBonus: " + bonusScore.ToString();
+                        scoreBoard.text = "x " + score.ToString() + "\n\nx " + (bonusScore / 15).ToString();
                     }
                 }
             }
@@ -109,7 +109,7 @@ public class GameController : MonoBehaviour
             {
                 print("time Slowed");
                 slowTimeRem -= Time.deltaTime;
-                SetBonusBoardText("Slow Time Remainig:" + slowTimeRem.ToString());
+                SetBonusBoardText("Slow Time Remaining:" + slowTimeRem.ToString());
                 if (slowTimeRem < 0f)
                 {
                     isTimeSlowed = false;
@@ -131,13 +131,24 @@ public class GameController : MonoBehaviour
     public void IncreaseScore()
     {
         score += 1;
-        scoreBoard.text = "Score: " + score.ToString() + "\nBonus: " + bonusScore.ToString();
+        scoreBoard.text = "x " + score.ToString() + "\n\nx " + (bonusScore / 15).ToString();
 
         if (score % invincibleDigit == 0)
         {
             player.StartInvisibleMode();
             isTimePaused = true;
+            invincibleDigit += 3;
 
+            //if timeslow mode is on then finish that slow mode
+            if (isTimeSlowed)
+            {
+                isTimeSlowed = false;
+                slowTimeRem = 5f;
+                slowTimeDivider = 1f;
+                SetBonusBoardText("");
+                player.Shrink(false);
+                bgSound.pitch *= 1.5f;
+            }
         }
         if (currActiveIndx < 7 && score % (10 + 10 * tenMultiplier) == 0)
         {
@@ -204,11 +215,11 @@ public class GameController : MonoBehaviour
         bonusBoard.text = text;
     }
 
-    public void IncreaseTime()
+    public void IncreaseTimeFromAd()
     {
         timeRem += 10f;
         resumeBtn.gameObject.SetActive(true);
-        timeBoard.text = "Time:\n " + timeRem.ToString();
+        timeBoard.text = System.Math.Round(timeRem, 0).ToString();
     }
 
     public void ResumeGame()
